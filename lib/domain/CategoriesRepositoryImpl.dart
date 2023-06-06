@@ -1,22 +1,22 @@
 import 'package:async/async.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:test_app/domain/NetworkService.dart';
 import 'package:test_app/domain/NoDataFromApiError.dart';
 import 'package:test_app/domain/RandomJokeRepository.dart';
 import 'package:test_app/model/RandomJokeResponse.dart';
 
-class RandomJokeRepositoryImpl implements RandomJokeRepository {
+class CategoriesRepositoryImpl implements JokeCategoriesRepository {
   final NetworkService _service;
 
-  RandomJokeRepositoryImpl(this._service);
+  CategoriesRepositoryImpl(this._service);
 
   @override
-  Future<Result<RandomJokeResponse>> getRandomJoke([String? category]) async {
+  Future<Result<Categories>> getCategories() async {
     try {
-      final response = await _service.getRandomJoke(category);
+      final response = await _service.getCategories();
       if (response.data != null) {
-        return Result.value(RandomJokeResponse.fromJson(response.data!));
+        return Result.value(Categories.fromJson(response.data!));
       } else {
         return Result.error(NoDataFromApiError(response.statusCode));
       }
@@ -26,5 +26,11 @@ class RandomJokeRepositoryImpl implements RandomJokeRepository {
     } catch (e) {
       return Result.error(ApiFailedError(e));
     }
+  }
+}
+
+extension HttpStatus on Response {
+  bool isSuccess() {
+    return statusCode != null && (statusCode! >= 200 || statusCode! <= 299);
   }
 }

@@ -1,5 +1,5 @@
 class RandomJokeResponse {
-  List<String>? categories;
+  Categories? categories;
   String? createdAt;
   String? iconUrl;
   String? id;
@@ -18,8 +18,7 @@ class RandomJokeResponse {
   });
 
   RandomJokeResponse.fromJson(dynamic json) {
-    categories =
-        json['categories'] != null ? json['categories'].cast<String>() : [];
+    categories = Categories.fromJson(json["categories"]);
     createdAt = json['created_at'];
     iconUrl = json['icon_url'];
     id = json['id'];
@@ -27,16 +26,13 @@ class RandomJokeResponse {
     url = json['url'];
     value = json['value'];
   }
+}
 
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['categories'] = categories;
-    map['created_at'] = createdAt;
-    map['icon_url'] = iconUrl;
-    map['id'] = id;
-    map['updated_at'] = updatedAt;
-    map['url'] = url;
-    map['value'] = value;
-    return map;
+class Categories {
+  List<String>? categories;
+
+  Categories.fromJson(dynamic json) {
+    categories =
+        json != null ? json.cast<String>() : [];
   }
 }

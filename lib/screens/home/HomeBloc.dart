@@ -4,33 +4,70 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_app/domain/RandomJokeRepository.dart';
 import 'package:test_app/model/RandomJokeResponse.dart';
 
-class HomeBloc extends Bloc<HomeEvent, HomeState> {
+class CategoriesBloc extends Bloc<LoadCategories, CategoriesState> {
+  JokeCategoriesRepository repository;
+
+  CategoriesBloc(this.repository) : super(const CategoriesState(false, [])) {
+    on((event, emit) async {
+      switch (event.runtimeType) {
+        case LoadCategories:
+          {
+            emit(const CategoriesState(true, []));
+            Result<Categories> response = await repository.getCategories();
+            emit(CategoriesState(
+                false, response.asValue?.value.categories ?? []));
+          }
+          break;
+      }
+    });
+  }
+}
+
+class RandomJokesBloc extends Bloc<LoadRandomJoke, RandomJokeState> {
   RandomJokeRepository service;
 
-  HomeBloc(this.service) : super(const HomeState(false, "No Data")) {
+  RandomJokesBloc(this.service)
+      : super(const RandomJokeState(false, "No Data")) {
     on((event, emit) async {
-      switch (event) {
-        case HomeEvent.load:
+      switch (event.runtimeType) {
+        case LoadRandomJoke:
           {
-            emit(const HomeState(true, "Loading"));
-            Result<RandomJokeResponse> response = await service.getRandomJoke();
-            emit(HomeState(false, response.asValue?.value.value ?? "No Joke"));
+            final category = event as LoadRandomJoke;
+            emit(const RandomJokeState(true, "Loading"));
+            Result<RandomJokeResponse> response = await service.getRandomJoke(category.category);
+            emit(RandomJokeState(
+                false, response.asValue?.value.value ?? "No Joke"));
           }
       }
     });
   }
 }
 
-class HomeState extends Equatable {
+class RandomJokeState extends Equatable {
   final bool isLoading;
-  final String data;
+  final String randomJoke;
 
-  const HomeState(this.isLoading, this.data);
+  const RandomJokeState(this.isLoading, this.randomJoke);
 
   @override
-  List<Object?> get props => [isLoading, data];
+  List<Object?> get props => [isLoading, randomJoke];
 }
 
-enum HomeEvent {
-  load;
+class LoadRandomJoke {
+  String? category;
+
+  LoadRandomJoke([this.category]);
 }
+
+class LoadCategories{}
+
+class CategoriesState extends Equatable {
+  final bool isLoading;
+  final List<String> jokeCategories;
+
+  const CategoriesState(this.isLoading, this.jokeCategories);
+
+  @override
+  List<Object?> get props => [isLoading, jokeCategories];
+}
+

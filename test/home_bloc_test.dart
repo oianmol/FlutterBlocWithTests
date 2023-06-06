@@ -9,10 +9,10 @@ void main() {
   RandomJokeRepository service = RandomJokeRepositoryImpl(FakeNetworkService());
 
   blocTest(
-    'emits HomeState(true, "Loading"), when HomeEvent.load is added',
-    build: () => HomeBloc(service),
-    act: (bloc) => bloc.add(HomeEvent.load),
+    'emits Loading when load event is added',
+    build: () => RandomJokesBloc(service),
+    act: (bloc) => bloc.add(LoadRandomJoke()),
     expect: () =>
-        [const HomeState(true, "Loading"), const HomeState(false, "A Joke")],
+        [const RandomJokeState(true, "Loading"), const RandomJokeState(false, "A Joke")],
   );
 }
