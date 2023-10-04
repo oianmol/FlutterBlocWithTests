@@ -34,9 +34,13 @@ class RandomJokesBloc extends Bloc<LoadRandomJoke, RandomJokeState> {
           {
             final category = event as LoadRandomJoke;
             emit(const RandomJokeState(true, "Loading"));
-            Result<RandomJokeResponse> response = await service.getRandomJoke(category.category);
-            emit(RandomJokeState(
-                false, response.asValue?.value.value ?? "No Joke"));
+            try {
+              RandomJokeResponse response =
+                  await service.getRandomJoke(category.category);
+              emit(RandomJokeState(false, response.value ?? "No Joke"));
+            } catch (e) {
+              emit(RandomJokeState(false, "No Joke $e"));
+            }
           }
       }
     });
@@ -59,7 +63,7 @@ class LoadRandomJoke {
   LoadRandomJoke([this.category]);
 }
 
-class LoadCategories{}
+class LoadCategories {}
 
 class CategoriesState extends Equatable {
   final bool isLoading;
@@ -70,4 +74,3 @@ class CategoriesState extends Equatable {
   @override
   List<Object?> get props => [isLoading, jokeCategories];
 }
-

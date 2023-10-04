@@ -40,6 +40,7 @@ class HomeScreenWithBloc extends StatelessWidget {
               context.read<CategoriesBloc>().add(LoadCategories());
               context.read<RandomJokesBloc>().add(LoadRandomJoke());
             },
+            key: const Key("load"),
             child: state.isLoading
                 ? const CircularProgressIndicator()
                 : const Icon(Icons.file_download)));
@@ -49,7 +50,8 @@ class HomeScreenWithBloc extends StatelessWidget {
     return BlocConsumer<RandomJokesBloc, RandomJokeState>(
       listener: (context, state) {},
       builder: (context, state) {
-        return Text(state.randomJoke).withPadding(const EdgeInsets.all(8));
+        return Text(state.randomJoke,key: Key("jokeText"),).withPadding(const EdgeInsets
+            .all(8));
       },
     );
   }

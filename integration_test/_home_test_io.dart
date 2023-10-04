@@ -6,9 +6,10 @@ import 'package:test_app/main.dart' as app;
 
 void main() {
   final IntegrationTestWidgetsFlutterBinding binding =
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('verify No Data', (WidgetTester tester) async {
+  testWidgets('verify data tries to load when requested', (WidgetTester
+  tester) async {
     // Build our app.
     app.main();
 
@@ -18,9 +19,28 @@ void main() {
     // Verify that platform version is retrieved.
     expect(
       find.byWidgetPredicate(
-            (Widget widget) => widget is Text && widget.data! == "No Data",
+        (Widget widget) => widget is Text && widget.data! == "No Data",
       ),
       findsOneWidget,
+    );
+
+    // Finds the floating action button to tap on.
+    final fab = find.byKey(const Key('load'));
+
+    // Emulate a tap on the floating action button.
+    await tester.tap(fab);
+
+    // Trigger a frame.
+    await tester.pumpAndSettle();
+
+    final jokeText = find.byKey(const Key("jokeText"));
+
+    // Verify that platform version is retrieved.
+    expect(
+      find.byWidgetPredicate(
+        (Widget widget) => widget is Text && widget.data! == "No Data",
+      ),
+      findsNothing,
     );
   });
 
